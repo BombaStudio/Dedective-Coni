@@ -1,0 +1,10 @@
+body {
+    background-image: url("src/bg.png");
+}
+.footer {
+    position: fixed;
+    bottom: 0%;
+    left: 0%;
+    width: 100vw;
+    background-color: rgb(154, 154, 154);
+}
