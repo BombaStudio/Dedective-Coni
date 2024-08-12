@@ -21,14 +21,19 @@
     <img src="/src/suri.png" id="suri" alt="" class="bg suri">
 
     <div class="start">
-        <button class="btn btn-primary col">Start Game</button>
-        <button class="btn btn-primary col">Credits</button>
+        <button class="btn btn-primary col" id="start">Start Game</button>
     </div>
 
     
 
     <script>
-        
+        document.getElementById("start").onclick = function () {
+            fetch("/add_room").then(function (response) {
+                return response.json();
+            }).then(function (json) {
+                window.location.href = "/room/"+json.roomID;
+            });
+        };
         
     </script>
 </body>

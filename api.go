@@ -48,7 +48,7 @@ func getMessages(w http.ResponseWriter, r *http.Request) {
 
 func addRoom(w http.ResponseWriter, r *http.Request) {
 	var sus bool = RandBool()
-	var scenario string = generateText("VAR1, VAR2 and VAR3 is variable that you decided and create a criminal scenario that VAR1 is the name of suspect, VAR2 is the A brief history of the crime and incident of which the suspect is accused, VAR3 is evidence to incriminate the suspect. And write them like:\nName: VAR1\nEvent: VAR2\nEvidence: VAR3", key)
+	var scenario string = generateText("VAR1, VAR2 and VAR3 is variable that you decided and create a criminal scenario that VAR1 is the name of suspect, VAR2 is the A brief history of the crime and incident of which the suspect is accused, VAR3 is evidence to incriminate the suspect. And write them like:\nName: VAR1\nEvent: VAR2\nEvidence: VAR3", "AIzaSyCTB075sQmU6Yh76nZZgYO_sV-bMzKANfg")
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(addNewRoom(
@@ -80,7 +80,7 @@ func api() {
 	//keyy := flag.String("key", "", "")
 	flag.Parse()
 	//key = string(*keyy)
-	key := "AIzaSyCTB075sQmU6Yh76nZZgYO_sV-bMzKANfg"
+	//key := "AIzaSyCTB075sQmU6Yh76nZZgYO_sV-bMzKANfg"
 	router := mux.NewRouter()
 
 	// Define your routes
@@ -151,7 +151,7 @@ func api() {
 			ClientID: clientID,
 			Message:  message,
 		})
-		add_message_with_ai(roomID, key)
+		add_message_with_ai(roomID, "AIzaSyCTB075sQmU6Yh76nZZgYO_sV-bMzKANfg")
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(getChat(roomID))
 	})
