@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="/src/style.css">
+
+    <!-- Latest compiled and minified CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <title>Document</title>
+
+    
+</head>
+<body>
+    <div class="bgc"></div>
+    <img src="/src/hd/oda_asl_1.png" alt="" class="bg">
+    <img src="/src/hd/oda_filtre.png" alt="" class="bg filter">
+    <img src="/src/suri.png" id="suri" alt="" class="bg suri">
+
+    <h1 id="timer" style="position: absolute;left: 75%; width: 25vw;height: 25vh;z-index: 8;text-align: center;color: azure;">
+        180
+    </h1>
+
+    <div id="messages">
+
+    </div>
+
+    <div id="paper1" style="position: fixed;width: 75vw;height: 100vh;z-index: 9;text-align: center;background-image: url('/src/chat.png');pointer-events: none; opacity: 0;">
+        <button id="close" class="btn btn-danger" style="position: inherit;top: 27%;left: 48%;width: 50px; height: 50px; z-index: 10;font-family: Cursive;">X</button>
+        <p id="info" type="text" name="as" id="a" style="position: inherit;top: 30%;left: 20%;width: 30%; height: 60%; z-index: 10;font-family: Cursive;">
+        sdoısdkfshdfhsdhjgfgsgldgsfdgshdghfsghd
+        sdoısdkfshdfhsdhjgfgsgldgsfdgshdghfsghdsd
+        f
+        </p>
+        <button id="criminal" class="btn btn-danger" style="position: inherit;top: 90%;left: 20%;width: 150px; height: 50px; z-index: 10;font-family: Cursive;">Criminal</button>
+        <button id="clear" class="btn btn-success" style="position: inherit;top: 90%;left: 40%;width: 150px; height: 50px; z-index: 10;font-family: Cursive;">Clear</button>
+    </div>
+    <div id="paper2" style="position: fixed;width: 75vw;height: 100vh;z-index: 9;text-align: center;background-image: url('/src/chat.png');pointer-events: none; opacity: 0;">
+        <h2 id="info2" type="text" name="as" style="position: inherit;top: 30%;left: 20%;width: 30%; height: 60%; z-index: 10;font-family: Cursive;">
+        Success
+        </h2>
+        <button id="gomenu" class="btn btn-danger" style="position: inherit;top: 90%;left: 30%;width: 150px; height: 50px; z-index: 10;font-family: Cursive;">Menu</button>
+    </div>
+
+    <div class="footer" id="footer">
+        <div class="row justify-content-md-center">
+            <div class="mb-3 mt-3 col-md-auto">
+                <input type="text" class="form-control col" id="msg" placeholder="Enter your question">
+            </div>
+            <div class="mb-3 mt-3 col-md-auto">
+                <button id="subMSG" class="btn btn-primary col">Submit</button>
+            </div>
+            <div class="mb-3 mt-3 col-md-auto">
+                <button id="open" style="background-color: rgba(0,0,0,0);border: 0;">
+                    <img src="/src/chat.png" alt="" width="75" height="75">
+                </button>
+            </div>
+        </div>
+    </div>
+    <script>
+        let subMSG = document.getElementById("subMSG");
+
+        var msgEndpoint = 0;
+        var animated = false;
+
+        var gameTime = 0;
+        var lastGameTime = 180;
+        var sus = false;
+        var decided = false;
+        var success = false;
+
+        var suri = document.getElementById("suri");
+
+        document.getElementById("open").onclick = function () {
+            document.getElementById("paper1").style.opacity = 1;
+            document.getElementById("paper1").style.pointerEvents = "all";
+        };
+        document.getElementById("close").onclick = function () {
+            document.getElementById("paper1").style.opacity = 0;
+            document.getElementById("paper1").style.pointerEvents = "none";
+        };
+        document.getElementById("criminal").onclick = function () {
+            sus = true;
+            decided = true;
+            fetch("/rooms/{{ . }}").then(function (response) {
+                return response.json();
+            }).then(function (json) {
+                success = json.sus == sus;
+                gameTime = lastGameTime;
+                endgame(decided && success);
+            });
+        };
+        document.getElementById("clear").onclick = function () {
+            sus = false;
+            decided = true;
+            fetch("/rooms/{{ . }}").then(function (response) {
+                return response.json();
+            }).then(function (json) {
+                success = json.sus == sus;
+                gameTime = lastGameTime;
+                endgame(decided && success);
+            });
+        };
+
+        subMSG.onclick = function () {
+            let msg = document.getElementById("msg");
+            fetch("/rooms/{{ . }}/add_message/client/"+msg.value)
+                    .then(function(response) { return response.json(); })
+                        .then(function(json) {
+                            console.log(json);
+                            msg.value = "";
+                            animated = false;
+                        }
+                )
+        }
+        
+        var initialGame = setInterval(
+            function () {
+                if (gameTime < lastGameTime){
+                    fetch("/rooms/{{ . }}/messages")
+                        .then(function(response) { return response.json(); })
+                            .then(function(json) {
+                                console.log(json);
+                                messages.innerHTML = "";
+                                msgEndpoint = json.length;
+
+                                if (msgEndpoint != 0){
+                                    console.log(animated);
+                                    
+                                    if (json[msgEndpoint-1].clientID == "AI" && animated == false){
+                                        animated = true;
+                                        surisuri(json[msgEndpoint-1].message.split(" ").length/10);
+                                        subMSG.disabled = true;
+                                    }
+                                    else subMSG.disabled = false;
+                                    json.forEach(element => {
+                                        let messages = document.getElementById("messages");
+                                        messages.innerHTML += '<div class="container" style="font-family: Cursive;"><span class="badge bg-secondary">'+element.clientID+'</span><span class="text-light" style="font-family: Cursive;">'+element.message+'</span></div>';
+                                        
+                                    });
+                                }
+                                
+                                
+                            }
+                    );
+                    fetch("/rooms/{{ . }}").then(function (response) {
+                        return response.json();
+                    }).then(function (json) {
+                        document.getElementById("info").innerHTML = json.scenario;
+                    });
+                    gameTime++;
+                    document.getElementById("timer").innerHTML = (lastGameTime - gameTime).toString();
+                }
+                else {
+                    animated = true;
+                    document.getElementById("messages").innerHTML = "";
+                    //fetch("/delete_room/{{ . }}");
+                    clearInterval(initialGame);
+                    //window.location.href = "/";
+                    if (!decided) endgame(decided);
+                    
+                    
+                }
+            },
+        1000);
+        function endgame(params) {
+            var footer = document.getElementById("footer");
+            footer.innerHTML = "";
+            var endpaper = document.getElementById("paper2");
+            endpaper.style.opacity = 1;
+            endpaper.style.pointerEvents = "all";
+            document.getElementById("info2").innerHTML = params ? "Success" : "Fail";
+        }
+        document.getElementById("gomenu").onclick = function () {
+            fetch("/delete_room/{{ . }}").then(function (params) {
+                window.location.href = "/";
+            });
+        };
+        function surisuri(length) {
+            var time = length;
+            var dt = 0;
+            var inter = setInterval(function () {
+                if (dt < time){
+                    dt += 1/30;
+                    if (suri.src != "/src/suriyeli.gif"){
+                        suri.src = "/src/suriyeli.gif";
+                    }
+                    //console.log(dt);
+                    
+                    
+                }
+                else {
+                    console.log(31);
+                    
+                    suri.src = "/src/suri.png";
+                    clearInterval(inter);
+                }
+            },30);
+        }
+        
+    </script>
+</body>
+</html>

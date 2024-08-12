@@ -55,14 +55,14 @@ func add_message_with_ai(roomID string, key string) {
 	var i = 0
 	for _, room := range rooms {
 		if room.RoomID == roomID {
-			msg, err := json.Marshal(rooms[i].Messages[len(rooms[i].Messages)-1])
+			msg, err := json.Marshal(rooms[i])
 			if err != nil {
 				break
 			}
 			fmt.Println(string(msg))
 			rooms[i].Messages = append(rooms[i].Messages, MessageData{
 				ClientID: "AI",
-				Message:  generateText("Answer the question in the 'message' parameter from the json variable I specified below.\n"+string(msg), key),
+				Message:  generateText("You are a suspect in an interrogation room and you are accused of 'scenario', which I will mention at the end of the text. And our conversations during this query are recorded in the JSON parameter in the 'messages' variable. Among the JSON parameters in the 'messages' variable, if 'you' is written in the 'clientID' parameter, you have said what is written in the 'message' parameter before, but if 'me' is written in the 'clientID' parameter, I have said what is written in the 'message' parameter before. It will base you on the 'clientID' and 'message' parameters from the JSON parameters in the 'messages' variable, and you will look at the 'sus' boolean value and answer the question as a guilty person if it is true, or as an innocent if it is false, if I asked you a question. But if I don't ask anything, you will try to convince me that you are innocent."+string(msg), key),
 			})
 			break
 		}

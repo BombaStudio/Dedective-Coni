@@ -1,10 +1,61 @@
-body {
-    background-image: url("src/bg.png");
+.bgc {
+    display: block;
+    unicode-bidi: isolate;
+
+    position: fixed;
+    bottom: 0%;
+    left: 0%;
+    width: 100vw;
+    height: 100vh;
+    background-color: #D1CDBD;
+    z-index: 0;
 }
+.bg {
+    display: block;
+    unicode-bidi: isolate;
+
+    position: fixed;
+    bottom: -55%;
+    left: -25%;
+    width: 155vw;
+    height: 155vh;
+
+    z-index: 2;
+
+    
+}
+.filter {
+    z-index: 3;
+}
+.suri {
+    bottom: 5%;
+    left: 40%;
+    width: 30vw;
+    height: 60vh;
+    z-index: 1;
+}
+#messages {
+    z-index: 5;
+    position: fixed;
+}
+
+
 .footer {
     position: fixed;
     bottom: 0%;
     left: 0%;
     width: 100vw;
-    background-color: rgb(154, 154, 154);
+
+    z-index: 5;
+}
+
+.start {
+    display: block;
+    unicode-bidi: isolate;
+
+    position: fixed;
+    bottom: 25vh;
+    left: 85vw;
+
+    z-index: 5;
 }

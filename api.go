@@ -48,7 +48,7 @@ func getMessages(w http.ResponseWriter, r *http.Request) {
 
 func addRoom(w http.ResponseWriter, r *http.Request) {
 	var sus bool = RandBool()
-	var scenario string = generateText("", key)
+	var scenario string = generateText("VAR1, VAR2 and VAR3 is variable that you decided and create a criminal scenario that VAR1 is the name of suspect, VAR2 is the A brief history of the crime and incident of which the suspect is accused, VAR3 is evidence to incriminate the suspect. And write them like:\nName: VAR1\nEvent: VAR2\nEvidence: VAR3", key)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(addNewRoom(
@@ -58,7 +58,24 @@ func addRoom(w http.ResponseWriter, r *http.Request) {
 		[]MessageData{},
 	))
 }
+func removeRoom(slice []Room, roomIDToRemove string) {
+	for i, room := range rooms {
+		if room.RoomID == roomIDToRemove {
+			rooms = append(rooms[:i], rooms[i+1:]...)
+			break
+		}
+	}
+}
+func deleteRoom(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	requestedRoomID := vars["roomID"]
 
+	removeRoom(rooms, requestedRoomID)
+
+	w.Header().Set("Content-Type", "application/json")
+
+	fmt.Fprintln(w, "{'roomID':'"+requestedRoomID+"','message':'room removed'}")
+}
 func api() {
 	keyy := flag.String("key", "", "")
 	flag.Parse()
@@ -75,7 +92,7 @@ func api() {
 
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		//http.ServeFile(w, r, "./templates")
-		t, err := template.ParseGlob("./templates/index.gohtml")
+		t, err := template.ParseGlob("./templates/main.html")
 		if err != nil {
 			fmt.Println(err)
 			http.NotFound(w, r)
@@ -87,15 +104,22 @@ func api() {
 	router.HandleFunc("/room/{roomID}", func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		requestedRoomID := vars["roomID"]
-		t, err := template.ParseGlob("./templates/index.gohtml")
+		t, err := template.ParseGlob("./templates/index.html")
 		if err != nil {
 			fmt.Println(err)
 			http.NotFound(w, r)
 		} else {
-			t.Execute(w, requestedRoomID)
+			for _, room := range rooms {
+				if room.RoomID == requestedRoomID {
+					t.Execute(w, requestedRoomID)
+					return
+				}
+			}
+			http.NotFound(w, r)
 		}
 	})
 	router.HandleFunc("/add_room", addRoom).Methods("GET")
+	router.HandleFunc("/delete_room/{roomID}", deleteRoom).Methods("GET")
 	router.HandleFunc("/rooms", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(rooms)
