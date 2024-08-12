@@ -77,9 +77,10 @@ func deleteRoom(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "{'roomID':'"+requestedRoomID+"','message':'room removed'}")
 }
 func api() {
-	keyy := flag.String("key", "", "")
+	//keyy := flag.String("key", "", "")
 	flag.Parse()
-	key = string(*keyy)
+	//key = string(*keyy)
+	key := "AIzaSyCTB075sQmU6Yh76nZZgYO_sV-bMzKANfg"
 	router := mux.NewRouter()
 
 	// Define your routes
